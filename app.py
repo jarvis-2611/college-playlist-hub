@@ -61,5 +61,21 @@ def vote(song_id, vote_type):
     return redirect(url_for('index'))
 
 
+# Handles the search functionality
+@app.route('/search')
+def search():
+    conn = get_db_connection()
+    query = request.args.get('query', '')
+
+    # Use the LIKE operator for partial matching on title or artist
+    # The % is a wildcard character in SQL
+    songs = conn.execute(
+        'SELECT * FROM songs WHERE title LIKE ? OR artist LIKE ? ORDER BY (likes - dislikes) DESC',
+        ('%' + query + '%', '%' + query + '%')
+    ).fetchall()
+
+    conn.close()
+
+    return render_template('index.html', songs=songs, search_query=query)
 if __name__ == '__main__':
     app.run(debug=True)

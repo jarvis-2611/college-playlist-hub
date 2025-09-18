@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>College Playlist Hub</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        h1, h2 { text-align: center; color: #333; }
+        .song-list { list-style: none; padding: 0; }
+        .song-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .song-info { flex-grow: 1; }
+        .song-info h3 { margin: 0; }
+        .song-info p { margin: 5px 0 0; color: #666; }
+        .vote-section form { display: inline; }
+        .vote-section button { padding: 5px 10px; border: none; cursor: pointer; }
+        .like-btn { background-color: #4CAF50; color: white; }
+        .dislike-btn { background-color: #f44336; color: white; }
+        .votes { font-weight: bold; margin: 0 10px; }
+        .add-song-form { background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .add-song-form input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; }
+        .add-song-form button { width: 100%; padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>🎵 College Playlist Hub 🎧</h1>
+<div class="search-form" style="text-align: center; margin-bottom: 20px;">
+        <form action="{{ url_for('search') }}" method="get">
+            <input type="text" name="query" placeholder="Search for songs or artists..." style="width: 60%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <button type="submit" style="padding: 10px 15px; background-color: #337ab7; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+        </form>
+    </div>
+   {% if search_query %}
+    <h2>Search Results for "{{ search_query }}"</h2>
+    {% else %}
+    <h2>Top Trending Songs</h2>
+    {% endif %}
+    <ul class="song-list">
+        {% for song in songs %}
+        <li class="song-item">
+            <div class="song-info">
+                <h3>{{ song.title }}</h3>
+                <p>by {{ song.artist }}</p>
+                <p><a href="{{ song.link }}" target="_blank">Listen on YouTube/Spotify</a></p>
+            </div>
+            <div class="vote-section">
+                <form action="{{ url_for('vote', song_id=song.song_id, vote_type='like') }}" method="post">
+                    <button class="like-btn" type="submit">👍</button>
+                </form>
+                <span class="votes">{{ song.likes }}</span>
+                <form action="{{ url_for('vote', song_id=song.song_id, vote_type='dislike') }}" method="post">
+                    <button class="dislike-btn" type="submit">👎</button>
+                </form>
+                <span class="votes">{{ song.dislikes }}</span>
+            </div>
+        </li>
+        {% else %}
+        <p style="text-align: center;">No songs submitted yet. Be the first!</p>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h2>Submit a New Song</h2>
+    <div class="add-song-form">
+        <form action="{{ url_for('add_song') }}" method="post">
+            <input type="text" name="title" placeholder="Song Title" required>
+            <input type="text" name="artist" placeholder="Artist Name" required>
+            <input type="url" name="link" placeholder="YouTube/Spotify Link" required>
+            <button type="submit">Add Song</button>
+        </form>
+    </div>
+
+</body>
+</html>

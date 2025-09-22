@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,flash
 import sqlite3
 
 app = Flask(__name__)
-
+app.secret_key = 'your_super_secret_key'
 
 # Function to connect to the database
 def get_db_connection():
@@ -34,6 +34,7 @@ def add_song():
                      (title, artist, link))
         conn.commit()
         conn.close()
+        flash('Song added successfully!', 'success')
         return redirect(url_for('index'))
 
 
@@ -56,12 +57,11 @@ def vote(song_id, vote_type):
         # Record the vote in the votes table
         conn.execute('INSERT INTO votes (song_id, user_ip) VALUES (?, ?)', (song_id, user_ip))
         conn.commit()
-
+        flash('Your vote has been counted!', 'success')
+    else:
+        flash('You have already voted on this song.', 'error')
     conn.close()
     return redirect(url_for('index'))
-
-
-# Handles the search functionality
 @app.route('/search')
 def search():
     conn = get_db_connection()

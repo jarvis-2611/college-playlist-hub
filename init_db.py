@@ -13,7 +13,8 @@ def init_db():
             artist TEXT NOT NULL,
             link TEXT NOT NULL,
             likes INTEGER DEFAULT 0,
-            dislikes INTEGER DEFAULT 0
+            dislikes INTEGER DEFAULT 0,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 

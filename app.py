@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for,flash
 import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_super_secret_key'
@@ -77,5 +78,37 @@ def search():
     conn.close()
 
     return render_template('index.html', songs=songs, search_query=query)
+
+
+@app.route('/newest')
+def newest_songs():
+    conn = get_db_connection()
+    # Query to get all songs, ordered by the creation timestamp (most recent first)
+    songs = conn.execute('SELECT * FROM songs ORDER BY created_at DESC').fetchall()
+    conn.close()
+    return render_template('index.html', songs=songs, title="Newest Songs")
+
+@app.context_processor
+def utility_processor():
+    def format_timestamp(timestamp):
+        # Convert the SQLite timestamp string to a datetime object
+        dt_object = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+
+        # Calculate the time difference from now
+        time_diff = datetime.now() - dt_object
+
+        # Simple logic to display human-readable time
+        if time_diff.days > 0:
+            return dt_object.strftime("%b %d, %Y") # e.g., "Sep 26, 2025"
+        elif time_diff.seconds > 3600:
+            hours = time_diff.seconds // 3600
+            return f"{hours} hour{'s' if hours > 1 else ''} ago"
+        elif time_diff.seconds > 60:
+            minutes = time_diff.seconds // 60
+            return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+        else:
+            return "just now"
+
+    return dict(format_timestamp=format_timestamp)
 if __name__ == '__main__':
     app.run(debug=True)

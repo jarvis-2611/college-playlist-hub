@@ -35,15 +35,30 @@
       {% endif %}
     {% endwith %}
     <h1>🎵 College Playlist Hub 🎧</h1>
+ <nav style="text-align: center; margin-bottom: 20px;">
+        <a href="{{ url_for('index') }}" style="margin: 0 15px; text-decoration: none; color: #007BFF;">Top Trending</a>
+        <a href="{{ url_for('newest_songs') }}" style="margin: 0 15px; text-decoration: none; color: #007BFF;">Newest Songs</a>
+    </nav>
 <div class="search-form" style="text-align: center; margin-bottom: 20px;">
         <form action="{{ url_for('search') }}" method="get">
             <input type="text" name="query" placeholder="Search for songs or artists..." style="width: 60%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
             <button type="submit" style="padding: 10px 15px; background-color: #337ab7; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
         </form>
     </div>
+    {% if title %}
+    <h2>{{ title }}</h2>
+{% else %}
     <h2>Top Trending Songs</h2>
+{% endif %}
     <ul class="song-list">
         {% for song in songs %}
+        <li class="song-item">
+    <div class="song-info">
+        <h3>{{ song.title }}</h3>
+        <p>by {{ song.artist }}</p>
+        <p>Added: {{ format_timestamp(song.created_at) }}</p>  <p><a href="{{ song.link }}" target="_blank">Listen on YouTube/Spotify</a></p>
+    </div>
+    </li>
         <li class="song-item">
             <div class="song-info">
                 <h3>{{ song.title }}</h3>
@@ -51,6 +66,7 @@
                 <p><a href="{{ song.link }}" target="_blank">Listen on YouTube/Spotify</a></p>
             </div>
             <div class="vote-section">
+
                 <form action="{{ url_for('vote', song_id=song.song_id, vote_type='like') }}" method="post">
                     <button class="like-btn" type="submit">👍</button>
                 </form>

@@ -6,26 +6,42 @@
     <style>
         body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
         h1, h2 { text-align: center; color: #333; }
+
+        /* Song List and Item Styles */
         .song-list { list-style: none; padding: 0; }
-        .song-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .song-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
         .song-info { flex-grow: 1; }
         .song-info h3 { margin: 0; }
         .song-info p { margin: 5px 0 0; color: #666; }
+
+        /* Voting Styles */
+        .vote-section { display: flex; align-items: center; }
         .vote-section form { display: inline; }
-        .vote-section button { padding: 5px 10px; border: none; cursor: pointer; }
+        .vote-section button { padding: 5px 10px; border: none; cursor: pointer; border-radius: 4px; margin: 0 5px; }
         .like-btn { background-color: #4CAF50; color: white; }
         .dislike-btn { background-color: #f44336; color: white; }
-        .votes { font-weight: bold; margin: 0 10px; }
+        .votes { font-weight: bold; margin: 0 5px; }
+
+        /* Add Song Form Styles */
         .add-song-form { background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        .add-song-form input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; }
-        .add-song-form button { width: 100%; padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        .add-song-form input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .add-song-form button { width: 100%; padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; border-radius: 4px; }
+
+        /* Flash Message Styles */
         .flashes { list-style: none; padding: 0; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
     </style>
 </head>
 <body>
- {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul class=flashes>
         {% for category, message in messages %}
@@ -34,39 +50,37 @@
         </ul>
       {% endif %}
     {% endwith %}
+
     <h1>🎵 College Playlist Hub 🎧</h1>
- <nav style="text-align: center; margin-bottom: 20px;">
+
+    <nav style="text-align: center; margin-bottom: 20px;">
         <a href="{{ url_for('index') }}" style="margin: 0 15px; text-decoration: none; color: #007BFF;">Top Trending</a>
         <a href="{{ url_for('newest_songs') }}" style="margin: 0 15px; text-decoration: none; color: #007BFF;">Newest Songs</a>
     </nav>
-<div class="search-form" style="text-align: center; margin-bottom: 20px;">
+
+    <div class="search-form" style="text-align: center; margin-bottom: 20px;">
         <form action="{{ url_for('search') }}" method="get">
             <input type="text" name="query" placeholder="Search for songs or artists..." style="width: 60%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
             <button type="submit" style="padding: 10px 15px; background-color: #337ab7; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
         </form>
     </div>
+
     {% if title %}
     <h2>{{ title }}</h2>
-{% else %}
+    {% else %}
     <h2>Top Trending Songs</h2>
-{% endif %}
+    {% endif %}
+
     <ul class="song-list">
         {% for song in songs %}
-        <li class="song-item">
-    <div class="song-info">
-        <h3>{{ song.title }}</h3>
-        <p>by {{ song.artist }}</p>
-        <p>Added: {{ format_timestamp(song.created_at) }}</p>  <p><a href="{{ song.link }}" target="_blank">Listen on YouTube/Spotify</a></p>
-    </div>
-    </li>
         <li class="song-item">
             <div class="song-info">
                 <h3>{{ song.title }}</h3>
                 <p>by {{ song.artist }}</p>
+                <p>Added: {{ format_timestamp(song.created_at) }}</p>
                 <p><a href="{{ song.link }}" target="_blank">Listen on YouTube/Spotify</a></p>
             </div>
             <div class="vote-section">
-
                 <form action="{{ url_for('vote', song_id=song.song_id, vote_type='like') }}" method="post">
                     <button class="like-btn" type="submit">👍</button>
                 </form>
